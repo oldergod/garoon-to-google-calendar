@@ -1,0 +1,11 @@
+.group_week_calendar_item {
+  position: relative;
+}
+
+.oldering {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.synced {}

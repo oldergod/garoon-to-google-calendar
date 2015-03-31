@@ -1,0 +1,41 @@
+{
+  "name": "Garoon2GoogleCalendar",
+  "description": "クラウド型ガルーンのイベントをGoogleCalendarに楽に同期でいるようにするクローム拡張アプリ。",
+  "manifest_version": 2,
+  "version": "0.0.1",
+  "background": {
+    "scripts": [
+      "javascript/shared.js",
+      "javascript/GEvent.js",
+      "javascript/CalendarUtils.js",
+      "javascript/background.js"
+    ]
+  },
+  "content_scripts": [{
+    "matches": ["https://*.cybozu.com/g/*"],
+    "js": ["javascript/shared.js", "javascript/content_script.js"],
+    "css": ["css/content_script.css"]
+  }],
+  "options_page": "views/options.html",
+  "options_ui": {
+    "page": "views/options.html",
+    "chrome_style": true
+  },
+  "permissions": [
+    "identity",
+    "tabs",
+    "storage"
+  ],
+  "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'",
+  "icons": {
+    "128": "images/icon-128.gif",
+    "16": "images/icon-16.gif"
+  },
+  "oauth2": {
+    "client_id": "100199330116-h2jjskhd76aj7o2799so8q998fon1ieb.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/calendar",
+      "https://www.googleapis.com/auth/calendar.readonly"
+    ]
+  }
+}
