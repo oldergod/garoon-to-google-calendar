@@ -10,7 +10,7 @@ function save_options() {
     calendarId: calendarId
   }, function() {
     var status = document.getElementById('status');
-    status.textContent = 'Options saved.';
+    status.textContent = 'オプションを保存した。';
     setTimeout(function() {
       status.textContent = '';
     }, 2000);

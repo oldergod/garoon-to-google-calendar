@@ -41,7 +41,7 @@ CalendarUtils.insertEvent = function(gevent, senderTabId) {
     gevent.calendarId_ = CalendarUtils.calendarId;
     var request = gapi.client.calendar.events.insert(gevent.toJsonObject());
     request.execute(function(resp) {
-        if (resp.code === 401) {
+        if (resp.code === 401 || resp.code === 403) {
           CalendarUtils.refreshAuthToken(CalendarUtils.insertEvent, [gevent, senderTabId]);
           return;
         }
@@ -71,12 +71,14 @@ CalendarUtils.checkEventSync = function(gevent, senderTabId) {
     };
     var request = gapi.client.calendar.events.get(_obj);
     request.execute(function(resp) {
-      if (resp.code === 401) {
+      if (resp.code === 401 || resp.code === 403) {
         CalendarUtils.refreshAuthToken(CalendarUtils.checkEventSync, [gevent, senderTabId]);
         return;
       }
       if ('iCalUID' in resp) {
         // TODO benoit check time to be sure it has not been rescheduled
+        // TODO benoit deleted events on GCalendar are still alive, check status or something
+        //   also resync cannot work because of this
         chrome.tabs.sendMessage(senderTabId, {
           geventId: gevent.id_,
           action: Action.CHECK_SYNC,
