@@ -3,9 +3,10 @@
 /* exported init */
 
 function switchStyleToSync(gEventId) {
-  var button = document.getElementById(gEventId);
-  button.innerText = 'is synced';
-  button.className += ' synced';
+  var syncImg = document.getElementById(gEventId).lastChild;
+  syncImg.src = chrome.extension.getURL('images/success.png');
+  syncImg.alt = 'グーグルカレンダーに同期されている';
+  syncImg.title = syncImg.alt;
 }
 
 function parseUrl(aElement) {
@@ -31,30 +32,18 @@ function parseUrl(aElement) {
   };
 }
 
-// Cannot inherit Date so let's extand this shit.
+// Cannot inherit Date so let's extend it.
 Date.prototype.garoonToDateTimeObject = function() {
   var dateTimeObject = {};
   dateTimeObject.dateTime = this.toISOString();
   return dateTimeObject;
 };
-// Date.prototype.garoonToDateObject = function() {
-//   var dateTimeObject = {};
-//   dateTimeObject.date = this.yyyymmdd();
-//   return dateTimeObject;
-// };
-// Date.prototype.garoonYyyyymmdd = function() {
-//   var yyyy = this.getFullYear().toString();
-//   var mm = (this.getMonth() + 1).toString(); // getMonth() is zero-based
-//   var dd = this.getDate().toString();
-//   return yyyy + (mm[1] ? mm : '0' + mm[0]) + (dd[1] ? dd : '0' + dd[0]); // padding
-// };
 
 var TITLE_WITH_LOCATION_REGEX = /^(.*) \[(.*)\]\s*$/;
 var TITLE_REGEX = /^(.*)\s*$/;
 var TIME_REGEX = /^(\d+):(\d+)-(\d+):(\d+)$/;
 
 var extractGroupWeekEvent = function(gwe) {
-  console.log(gwe);
   var _title = gwe.getElementsByClassName('groupWeekEventTitle').item(0);
   var _query = parseUrl(_title.getElementsByTagName('a')[0]).searchObject;
   var id = _query.event;
@@ -78,7 +67,6 @@ var extractGroupWeekEvent = function(gwe) {
   }
   startDate.setHours(_extractedTime[1], _extractedTime[2]);
   endDate.setHours(_extractedTime[3], _extractedTime[4]);
-  console.log(summary, '@', location, 'from', startDate.garoonToDateTimeObject(), 'to', endDate.garoonToDateTimeObject());
 
   return {
     id: GAROON_ID + id,
@@ -89,9 +77,7 @@ var extractGroupWeekEvent = function(gwe) {
   };
 };
 
-var handleResponse = function(response) {
-  console.log(response);
-};
+var handleResponse = function(response) {};
 
 var onClick = function() {
   return function() {
@@ -113,7 +99,6 @@ var onClick = function() {
 
 // messages received from tab.sendMessage
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-  console.log('onMessage in Content Script!', message, sender);
   switch (message.action) {
     case Action.CHECK_SYNC:
       if (message.success) {
@@ -123,7 +108,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       }
       break;
     case Action.INSERT_EVENT:
-      if (nessage.success) {
+      if (message.success) {
         switchStyleToSync(message.geventId);
       } else {
         console.log('it failed', message);
@@ -141,12 +126,20 @@ var initItAll = function() {
   var divs = document.getElementsByClassName('group_week_calendar_item');
   for (var i = 0; i < divs.length; i++) {
     var div = divs[i];
+    var _title = div.getElementsByClassName('groupWeekEventTitle').item(0);
+    if (!_title) {
+      continue;
+    }
     div.style.position = 'relative';
+    var syncImg = document.createElement('img');
+    syncImg.src = chrome.extension.getURL('images/sync.png');
+    syncImg.alt = 'グーグルカレンダーに同期する';
+    syncImg.title = syncImg.alt;
     var syncButton = document.createElement('div');
     syncButton.className = 'oldering';
-    syncButton.innerText = 'sync';
+    syncButton.appendChild(syncImg);
     syncButton.onclick = onClick();
-    var _eventId = GAROON_ID + parseUrl(div.getElementsByClassName('groupWeekEventTitle').item(0).getElementsByTagName('a')[0]).searchObject.event;
+    var _eventId = GAROON_ID + parseUrl(_title.getElementsByTagName('a')[0]).searchObject.event;
     syncButton.id = _eventId;
     div.appendChild(syncButton);
 

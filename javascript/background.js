@@ -10,7 +10,6 @@ var init = function() {
       access_token: token
     });
     CalendarUtils.initCalendar();
-    console.log('finished loading');
   });
 };
 
@@ -23,9 +22,7 @@ head.appendChild(script);
 
 // listen to calendarId changes;
 chrome.storage.onChanged.addListener(function(changes, namespace) {
-  console.log('changes', changes);
   for (var key in changes) {
-    console.log('key', key);
     if (key === undefined) {
       continue;
     }
@@ -43,7 +40,6 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 });
 
 chrome.runtime.onMessage.addListener(function(message, sender) {
-  console.log('onMessage !', message, sender);
   switch (message.action) {
     case Action.INSERT_EVENT:
       CalendarUtils.insertEvent(new GEvent(message.gevent), sender.tab.id);

@@ -32,7 +32,6 @@ var init = function() {
     gapi.auth.setToken({
       access_token: token
     });
-    console.log('fresh token options is', token);
 
     var gapiP = gapi.client.load('calendar', 'v3');
     gapiP.then(function() {
@@ -42,7 +41,6 @@ var init = function() {
 
       var select = document.getElementById('calendar_ids');
       request.execute(function(resp) {
-        console.log(resp);
         for (var i = 0; i < resp.items.length; i++) {
           var calendar = resp.items[i];
           if (calendar.accessRole === 'owner' || calendar.accessRole === 'writer') {
@@ -61,7 +59,6 @@ var init = function() {
         if (calendarId) {
           select.value = calendarId;
         }
-        console.log('hiding all !');
         document.getElementById('loading').style.display = 'none';
         select.style.display = 'inline';
       });

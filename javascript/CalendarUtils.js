@@ -11,7 +11,6 @@ CalendarUtils.setCalendarId = function(calendarId) {
 
 CalendarUtils.loadCalendarId = function() {
   chrome.storage.sync.get('calendarId', function(calendar) {
-    console.log('calendarId is', calendar.calendarId);
     CalendarUtils.calendarId = calendar.calendarId;
   });
 };
@@ -66,7 +65,6 @@ CalendarUtils.checkEventSync = function(gevent, senderTabId) {
   }
 
   gapi.client.load('calendar', 'v3').then(function() {
-    console.log('connard check sync', gevent);
     var _obj = {
       'calendarId': CalendarUtils.calendarId,
       'eventId': gevent.id_
@@ -78,6 +76,7 @@ CalendarUtils.checkEventSync = function(gevent, senderTabId) {
         return;
       }
       if ('iCalUID' in resp) {
+        // TODO benoit check time to be sure it has not been rescheduled
         chrome.tabs.sendMessage(senderTabId, {
           geventId: gevent.id_,
           action: Action.CHECK_SYNC,
