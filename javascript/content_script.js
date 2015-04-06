@@ -3,7 +3,9 @@
 /* exported init */
 
 function switchStyleToSync(gEventId) {
-  var syncImg = document.getElementById(gEventId).lastChild;
+  var syncBtn = document.getElementById(gEventId);
+  syncBtn.className += ' synced';
+  var syncImg = syncBtn.lastChild;
   syncImg.src = chrome.extension.getURL('images/success.png');
   syncImg.alt = 'グーグルカレンダーに同期されている';
   syncImg.title = syncImg.alt;

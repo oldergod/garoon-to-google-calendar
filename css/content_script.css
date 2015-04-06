@@ -9,4 +9,6 @@
   cursor: pointer;
 }
 
-.synced {}
+.synced {
+  cursor: default;
+}
