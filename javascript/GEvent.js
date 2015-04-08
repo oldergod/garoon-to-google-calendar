@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 var GEvent = function(gevent) {
   this.id_ = gevent.id;

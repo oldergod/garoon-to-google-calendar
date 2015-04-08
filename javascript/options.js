@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 /* global chrome, gapi, console */
 /* exported init */
 

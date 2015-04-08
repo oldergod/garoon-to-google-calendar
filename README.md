@@ -1,4 +1,4 @@
-# garoon-to-google-calendar
+﻿# garoon-to-google-calendar
 クラウド型ガルーンのイベントをGoogleCalendarに楽に同期でいるようにするクローム拡張アプリ。
 
 ## 機能説明

@@ -1,5 +1,6 @@
-'use strict';
+﻿'use strict';
 /* global chrome, gapi, console, GEvent, CalendarUtils, Action */
+/* exported init */
 
 var init = function() {
   console.log('gapi loaded');
@@ -49,5 +50,13 @@ chrome.runtime.onMessage.addListener(function(message, sender) {
       break;
     default:
       console.log('do not know this action', message);
+  }
+});
+
+chrome.runtime.onInstalled.addListener(function(details) {
+  if (details.reason == 'install') {
+    chrome.tabs.create({
+      'url': 'chrome://extensions/?options=' + chrome.runtime.id
+    });
   }
 });

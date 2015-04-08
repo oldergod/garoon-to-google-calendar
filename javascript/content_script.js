@@ -1,6 +1,5 @@
-'use strict';
-/* global chrome, console, Action, GAROON_ID */
-/* exported init */
+﻿'use strict';
+/* globals chrome, console, Action, GAROON_ID */
 
 function switchStyleToSync(gEventId) {
   var syncBtn = document.getElementById(gEventId);
@@ -79,7 +78,7 @@ var extractGroupWeekEvent = function(gwe) {
   };
 };
 
-var handleResponse = function(response) {};
+var handleResponse = function() {};
 
 var onClick = function() {
   return function() {

@@ -1,9 +1,9 @@
-{
+﻿{
   "name": "Garoon 2 GoogleCalendar",
   "short_name": "Garoon2GCal",
   "description": "クラウド型ガルーンのイベントをGoogleCalendarに楽に同期でいるようにするクローム拡張アプリ。",
   "manifest_version": 2,
-  "version": "0.0.4",
+  "version": "0.0.7",
   "background": {
     "scripts": [
       "javascript/shared.js",

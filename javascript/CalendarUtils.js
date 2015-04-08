@@ -1,17 +1,11 @@
-'use strict';
-/* global chrome, gapi, console, Action */
+﻿'use strict';
+/* globals chrome, gapi, console, Action */
 
 var CalendarUtils = {};
 
 CalendarUtils.setCalendarId = function(calendarId) {
   chrome.storage.sync.set({
     'calendarId': calendarId
-  });
-};
-
-CalendarUtils.loadCalendarId = function() {
-  chrome.storage.sync.get('calendarId', function(calendar) {
-    CalendarUtils.calendarId = calendar.calendarId;
   });
 };
 
