@@ -53,10 +53,12 @@ chrome.runtime.onMessage.addListener(function(message, sender) {
   }
 });
 
-chrome.runtime.onInstalled.addListener(function(details) {
-  if (details.reason == 'install') {
-    chrome.tabs.create({
-      'url': 'chrome://extensions/?options=' + chrome.runtime.id
-    });
-  }
-});
+// Would show option on installed but can be unnecessary
+// if people are using their default cal
+// chrome.runtime.onInstalled.addListener(function(details) {
+//   if (details.reason == 'install') {
+//     chrome.tabs.create({
+//       'url': 'chrome://extensions/?options=' + chrome.runtime.id
+//     });
+//   }
+// });

@@ -26,9 +26,12 @@ CalendarUtils.refreshAuthToken = function(callback, args) {
     });
 };
 
+// TODO calendarId is not set when content_script run from chrome start up.
+// need to review the whole thing about setting/getting calendarId
 CalendarUtils.insertEvent = function(gevent, senderTabId) {
   if (!CalendarUtils.calendarId) {
-    throw 'Error: calendarId is ' + CalendarUtils.calendarId;
+    console.log('Error: insertEvent: calendarId is ', CalendarUtils.calendarId);
+    return;
   }
 
   gapi.client.load('calendar', 'v3').then(function() {
@@ -55,7 +58,8 @@ CalendarUtils.insertEvent = function(gevent, senderTabId) {
 
 CalendarUtils.checkEventSync = function(gevent, senderTabId) {
   if (!CalendarUtils.calendarId) {
-    throw 'Error: calendarId is ' + CalendarUtils.calendarId;
+    console.log('Error: checkEventSync: calendarId is ', CalendarUtils.calendarId);
+    return;
   }
 
   gapi.client.load('calendar', 'v3').then(function() {
@@ -103,7 +107,8 @@ CalendarUtils.initCalendar = function() {
               return;
             }
           }
-          throw 'error, could not find any primary calendar to write on.';
+          console.log('Error: initCalendar: could not find any primary calendar to write on.');
+          return;
         });
       });
     }

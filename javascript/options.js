@@ -13,7 +13,7 @@ function save_options() {
     status.textContent = 'オプションを保存した。';
     setTimeout(function() {
       status.textContent = '';
-    }, 2000);
+    }, 3000);
   });
 }
 

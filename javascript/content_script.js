@@ -142,6 +142,8 @@ var initItAll = function() {
     syncButton.onclick = onClick();
     var _eventId = GAROON_ID + parseUrl(_title.getElementsByTagName('a')[0]).searchObject.event;
     syncButton.id = _eventId;
+    // TODO benoit maybe should extract the event first and be sure there is no error
+    // before adding the button since we don't support all events yet.
     div.appendChild(syncButton);
 
     // test sync
@@ -171,4 +173,6 @@ var config = {
 };
 observer.observe(target.parentNode, config);
 
-initItAll();
+setTimeout(function() {
+  initItAll();
+}, 0);
