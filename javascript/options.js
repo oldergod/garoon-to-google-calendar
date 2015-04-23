@@ -2,6 +2,10 @@
 /* global chrome, gapi, console */
 /* exported init */
 
+/**
+ * @fileoverview Load/save option for extension.
+ */
+
 var calendarId;
 
 function save_options() {
@@ -16,6 +20,14 @@ function save_options() {
     }, 3000);
   });
 }
+
+var loadGapi = function() {
+  var head = document.getElementsByTagName('head').item(0);
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = 'https://apis.google.com/js/client.js?onload=init';
+  head.appendChild(script);
+};
 
 function restore_options() {
   chrome.storage.sync.get(['calendarId'], function(storage) {
@@ -66,12 +78,5 @@ var init = function() {
   });
 };
 
-var loadGapi = function() {
-  var head = document.getElementsByTagName('head').item(0);
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.src = 'https://apis.google.com/js/client.js?onload=init';
-  head.appendChild(script);
-};
 document.addEventListener('DOMContentLoaded', restore_options);
 document.getElementById('save').addEventListener('click', save_options);

@@ -1,14 +1,26 @@
 ﻿'use strict';
 /* globals chrome, gapi, console, Action */
 
+/**
+ * @fileoverview Utils to deal with the Calendar gapi.
+ */
+
+// setting namespace
 var CalendarUtils = {};
 
+/**
+ * @param {string} calendarId
+ */
 CalendarUtils.setCalendarId = function(calendarId) {
   chrome.storage.sync.set({
     'calendarId': calendarId
   });
 };
 
+/**
+ * @param {Function} callback
+ * @param {Object} args
+ */
 CalendarUtils.refreshAuthToken = function(callback, args) {
   var tokenToDisable = gapi.auth.getToken().access_token;
   chrome.identity.removeCachedAuthToken({
@@ -26,8 +38,12 @@ CalendarUtils.refreshAuthToken = function(callback, args) {
     });
 };
 
-// TODO calendarId is not set when content_script run from chrome start up.
+// TODO(benoit) calendarId is not set when content_script run from chrome start up.
 // need to review the whole thing about setting/getting calendarId
+/**
+ * @param {GEvent} gevent
+ * @param {number} senderTabId
+ */
 CalendarUtils.insertEvent = function(gevent, senderTabId) {
   if (!CalendarUtils.calendarId) {
     console.log('Error: insertEvent: calendarId is ', CalendarUtils.calendarId);
@@ -56,6 +72,10 @@ CalendarUtils.insertEvent = function(gevent, senderTabId) {
   });
 };
 
+/**
+ * @param {GEvent} gevent
+ * @param {number} senderTabId
+ */
 CalendarUtils.checkEventSync = function(gevent, senderTabId) {
   if (!CalendarUtils.calendarId) {
     console.log('Error: checkEventSync: calendarId is ', CalendarUtils.calendarId);
@@ -89,6 +109,9 @@ CalendarUtils.checkEventSync = function(gevent, senderTabId) {
   });
 };
 
+/**
+ * initialize CalendarId
+ */
 CalendarUtils.initCalendar = function() {
   chrome.storage.sync.get('calendarId', function(calendar) {
     var calendarP = gapi.client.load('calendar', 'v3');

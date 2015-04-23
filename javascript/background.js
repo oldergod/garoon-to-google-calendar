@@ -2,6 +2,10 @@
 /* global chrome, gapi, console, GEvent, CalendarUtils, Action */
 /* exported init */
 
+/**
+ * @fileoverview Background.js run once the extension is launched.
+ */
+
 var init = function() {
   console.log('gapi loaded');
   chrome.identity.getAuthToken({
@@ -16,7 +20,9 @@ var init = function() {
 
 var head = document.getElementsByTagName('head').item(0);
 var script = document.createElement('script');
+/** gjslint wants some doc here? */
 script.type = 'text/javascript';
+/** gjslint wants some doc here? */
 script.src = 'https://apis.google.com/js/client.js?onload=init';
 head.appendChild(script);
 

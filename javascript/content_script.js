@@ -1,6 +1,13 @@
 ﻿'use strict';
 /* globals chrome, console, Action, GAROON_ID */
 
+/**
+ * @fileoverview Script running on each targetted tab.
+ */
+
+/**
+ * @param {number} gEventId
+ */
 function switchStyleToSync(gEventId) {
   var syncBtn = document.getElementById(gEventId);
   syncBtn.className += ' synced';
@@ -10,6 +17,10 @@ function switchStyleToSync(gEventId) {
   syncImg.title = syncImg.alt;
 }
 
+/**
+ * @param {!Element} aElement
+ * @return {Object}
+ */
 function parseUrl(aElement) {
   var searchObject = {};
   var queries;
@@ -33,7 +44,9 @@ function parseUrl(aElement) {
   };
 }
 
-// Cannot inherit Date so let's extend it.
+/**
+ * @return {string}
+ */
 Date.prototype.garoonToDateTimeObject = function() {
   var dateTimeObject = {};
   dateTimeObject.dateTime = this.toISOString();
@@ -44,6 +57,10 @@ var TITLE_WITH_LOCATION_REGEX = /^(.*) \[(.*)\]\s*$/;
 var TITLE_REGEX = /^(.*)\s*$/;
 var TIME_REGEX = /^(\d+):(\d+)-(\d+):(\d+)$/;
 
+/**
+ * @param {Element} gwe
+ * @return {Object}
+ */
 var extractGroupWeekEvent = function(gwe) {
   var _title = gwe.getElementsByClassName('groupWeekEventTitle').item(0);
   var _query = parseUrl(_title.getElementsByTagName('a')[0]).searchObject;
@@ -80,6 +97,9 @@ var extractGroupWeekEvent = function(gwe) {
 
 var handleResponse = function() {};
 
+/**
+ * @return {Function}
+ */
 var onClick = function() {
   return function() {
     var _event = extractGroupWeekEvent(this.parentElement);
@@ -123,6 +143,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   });
 });
 
+/**
+ * Initialize all sync buttons and check for the event sync status
+ */
 var initItAll = function() {
   var divs = document.getElementsByClassName('group_week_calendar_item');
   for (var i = 0; i < divs.length; i++) {
@@ -160,7 +183,7 @@ var initItAll = function() {
 var target = document.getElementsByClassName('group_week_calendar_item')[0];
 do {
   target = target.parentNode;
-} while (target && target.tagName != 'TABLE');
+} while (target && target.tagName !== 'TABLE');
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function() {
     initItAll();
