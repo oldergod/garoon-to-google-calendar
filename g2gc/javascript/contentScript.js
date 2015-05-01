@@ -1,12 +1,11 @@
-﻿'use strict';
-/* globals chrome, console, Action, GAROON_ID */
-
-/**
+﻿/**
  * @fileoverview Script running on each targetted tab.
  */
+goog.provide('g2gc.contentScript');
+goog.require('g2gc.constants');
 
 /**
- * @param {number} gEventId
+ * @param {string} gEventId
  */
 function switchStyleToSync(gEventId) {
   var syncBtn = document.getElementById(gEventId);
@@ -22,6 +21,7 @@ function switchStyleToSync(gEventId) {
  * @return {Object}
  */
 function parseUrl(aElement) {
+  /** @type {{bdate: (string|undefined)}} */
   var searchObject = {};
   var queries;
   var split;
@@ -45,7 +45,7 @@ function parseUrl(aElement) {
 }
 
 /**
- * @return {string}
+ * @return {Object}
  */
 Date.prototype.garoonToDateTimeObject = function() {
   var dateTimeObject = {};
@@ -83,11 +83,11 @@ var extractGroupWeekEvent = function(gwe) {
   if (!_extractedTime) {
     console.log('_extractedTime failed', _time.innerText);
   }
-  startDate.setHours(_extractedTime[1], _extractedTime[2]);
-  endDate.setHours(_extractedTime[3], _extractedTime[4]);
+  startDate.setHours(parseInt(_extractedTime[1], 10), parseInt(_extractedTime[2], 10));
+  endDate.setHours(parseInt(_extractedTime[3], 10), parseInt(_extractedTime[4], 10));
 
   return {
-    id: GAROON_ID + id,
+    id: g2gc.constants.GAROON_ID + id,
     summary: summary,
     location: location,
     start: startDate.garoonToDateTimeObject(),
@@ -105,7 +105,7 @@ var onClick = function() {
     var _event = extractGroupWeekEvent(this.parentElement);
 
     chrome.runtime.sendMessage(undefined, {
-      action: Action.INSERT_EVENT,
+      action: g2gc.constants.Action.INSERT_EVENT,
       gevent: {
         id: _event.id,
         summary: _event.summary,
@@ -117,31 +117,6 @@ var onClick = function() {
     switchStyleToSync(_event.id);
   };
 };
-
-// messages received from tab.sendMessage
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-  switch (message.action) {
-    case Action.CHECK_SYNC:
-      if (message.success) {
-        switchStyleToSync(message.geventId);
-      } else {
-        console.log('it failed', message);
-      }
-      break;
-    case Action.INSERT_EVENT:
-      if (message.success) {
-        switchStyleToSync(message.geventId);
-      } else {
-        console.log('it failed', message);
-      }
-      break;
-    default:
-      break;
-  }
-  sendResponse({
-    received: true
-  });
-});
 
 /**
  * Initialize all sync buttons and check for the event sync status
@@ -163,7 +138,7 @@ var initItAll = function() {
     syncButton.className = 'oldering';
     syncButton.appendChild(syncImg);
     syncButton.onclick = onClick();
-    var _eventId = GAROON_ID + parseUrl(_title.getElementsByTagName('a')[0]).searchObject.event;
+    var _eventId = g2gc.constants.GAROON_ID + parseUrl(_title.getElementsByTagName('a')[0]).searchObject.event;
     syncButton.id = _eventId;
     // TODO benoit maybe should extract the event first and be sure there is no error
     // before adding the button since we don't support all events yet.
@@ -171,7 +146,7 @@ var initItAll = function() {
 
     // test sync
     chrome.runtime.sendMessage(undefined, {
-      action: Action.CHECK_SYNC,
+      action: g2gc.constants.Action.CHECK_SYNC,
       gevent: {
         id: _eventId
       }
@@ -179,23 +154,53 @@ var initItAll = function() {
   }
 };
 
-// set Observer
-var target = document.getElementsByClassName('group_week_calendar_item')[0];
-do {
-  target = target.parentNode;
-} while (target && target.tagName !== 'TABLE');
-var observer = new MutationObserver(function(mutations) {
-  mutations.forEach(function() {
-    initItAll();
+function main() {
+  // set Observer
+  var target = document.getElementsByClassName('group_week_calendar_item')[0];
+  do {
+    target = target.parentNode;
+  } while (target && target.tagName !== 'TABLE');
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function() {
+      initItAll();
+    });
   });
-});
-var config = {
-  attributes: true,
-  childList: true,
-  characterData: true
-};
-observer.observe(target.parentNode, config);
+  var config = /** @type {MutationObserverInit} */ ({
+    attributes: true,
+    childList: true,
+    characterData: true
+  });
+  observer.observe(target.parentNode, config);
 
-setTimeout(function() {
-  initItAll();
-}, 0);
+  setTimeout(function() {
+    initItAll();
+  }, 0);
+
+  // messages received from tab.sendMessage
+  chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+    switch (message.action) {
+      case g2gc.constants.Action.CHECK_SYNC:
+        if (message.success && message.hasOwnProperty('geventId') && goog.isDefAndNotNull(message.geventId)) {
+          switchStyleToSync(message.geventId);
+        } else {
+          console.log('it failed', message);
+        }
+        break;
+      case g2gc.constants.Action.INSERT_EVENT:
+        if (message.success && message.hasOwnProperty('geventId') && goog.isDefAndNotNull(message.geventId)) {
+          switchStyleToSync(message.geventId);
+        } else {
+          console.log('it failed', message);
+        }
+        break;
+      default:
+        break;
+    }
+    sendResponse({
+      received: true
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', main);
+

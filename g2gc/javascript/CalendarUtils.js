@@ -1,17 +1,13 @@
-﻿'use strict';
-/* globals chrome, gapi, console, Action */
-
-/**
+﻿/**
  * @fileoverview Utils to deal with the Calendar gapi.
  */
-
-// setting namespace
-var CalendarUtils = {};
+goog.provide('g2gc.CalendarUtils');
+goog.require('g2gc.GEvent');
 
 /**
  * @param {string} calendarId
  */
-CalendarUtils.setCalendarId = function(calendarId) {
+g2gc.CalendarUtils.setCalendarId = function(calendarId) {
   chrome.storage.sync.set({
     'calendarId': calendarId
   });
@@ -21,7 +17,7 @@ CalendarUtils.setCalendarId = function(calendarId) {
  * @param {Function} callback
  * @param {Object} args
  */
-CalendarUtils.refreshAuthToken = function(callback, args) {
+g2gc.CalendarUtils.refreshAuthToken = function(callback, args) {
   var tokenToDisable = gapi.auth.getToken().access_token;
   chrome.identity.removeCachedAuthToken({
       'token': tokenToDisable
@@ -41,28 +37,28 @@ CalendarUtils.refreshAuthToken = function(callback, args) {
 // TODO(benoit) calendarId is not set when content_script run from chrome start up.
 // need to review the whole thing about setting/getting calendarId
 /**
- * @param {GEvent} gevent
+ * @param {!g2gc.GEvent} gevent
  * @param {number} senderTabId
  */
-CalendarUtils.insertEvent = function(gevent, senderTabId) {
-  if (!CalendarUtils.calendarId) {
-    console.log('Error: insertEvent: calendarId is ', CalendarUtils.calendarId);
+g2gc.CalendarUtils.insertEvent = function(gevent, senderTabId) {
+  if (!g2gc.CalendarUtils.calendarId) {
+    console.log('Error: insertEvent: calendarId is ', g2gc.CalendarUtils.calendarId);
     return;
   }
 
   gapi.client.load('calendar', 'v3').then(function() {
-    gevent.calendarId_ = CalendarUtils.calendarId;
+    gevent.calendarId_ = g2gc.CalendarUtils.calendarId;
     var request = gapi.client.calendar.events.insert(gevent.toJsonObject());
     request.execute(function(resp) {
         if (resp.code === 401 || resp.code === 403) {
-          CalendarUtils.refreshAuthToken(CalendarUtils.insertEvent, [gevent, senderTabId]);
+          g2gc.CalendarUtils.refreshAuthToken(g2gc.CalendarUtils.insertEvent, [gevent, senderTabId]);
           return;
         }
         console.log(resp);
         // TODO check at least that response if fine
         chrome.tabs.sendMessage(senderTabId, {
           geventId: gevent.id_,
-          action: Action.CHECK_SYNC,
+          action: g2gc.constants.Action.CHECK_SYNC,
           success: true
         });
       },
@@ -73,24 +69,24 @@ CalendarUtils.insertEvent = function(gevent, senderTabId) {
 };
 
 /**
- * @param {GEvent} gevent
+ * @param {!g2gc.GEvent} gevent
  * @param {number} senderTabId
  */
-CalendarUtils.checkEventSync = function(gevent, senderTabId) {
-  if (!CalendarUtils.calendarId) {
-    console.log('Error: checkEventSync: calendarId is ', CalendarUtils.calendarId);
+g2gc.CalendarUtils.checkEventSync = function(gevent, senderTabId) {
+  if (!g2gc.CalendarUtils.calendarId) {
+    console.log('Error: checkEventSync: calendarId is ', g2gc.CalendarUtils.calendarId);
     return;
   }
 
   gapi.client.load('calendar', 'v3').then(function() {
     var _obj = {
-      'calendarId': CalendarUtils.calendarId,
+      'calendarId': g2gc.CalendarUtils.calendarId,
       'eventId': gevent.id_
     };
     var request = gapi.client.calendar.events.get(_obj);
     request.execute(function(resp) {
       if (resp.code === 401 || resp.code === 403) {
-        CalendarUtils.refreshAuthToken(CalendarUtils.checkEventSync, [gevent, senderTabId]);
+        g2gc.CalendarUtils.refreshAuthToken(g2gc.CalendarUtils.checkEventSync, [gevent, senderTabId]);
         return;
       }
       if ('iCalUID' in resp) {
@@ -99,7 +95,7 @@ CalendarUtils.checkEventSync = function(gevent, senderTabId) {
         //   also resync cannot work because of this
         chrome.tabs.sendMessage(senderTabId, {
           geventId: gevent.id_,
-          action: Action.CHECK_SYNC,
+          action: g2gc.constants.Action.CHECK_SYNC,
           success: true
         });
       }
@@ -112,7 +108,7 @@ CalendarUtils.checkEventSync = function(gevent, senderTabId) {
 /**
  * initialize CalendarId
  */
-CalendarUtils.initCalendar = function() {
+g2gc.CalendarUtils.initCalendar = function() {
   chrome.storage.sync.get('calendarId', function(calendar) {
     var calendarP = gapi.client.load('calendar', 'v3');
     if (!calendar.calendarId) {
@@ -124,8 +120,8 @@ CalendarUtils.initCalendar = function() {
         request.execute(function(resp) {
           for (var i = 0; i < resp.items.length; i++) {
             var calendar = resp.items[i];
-            if (calendar.hasOwnProperty('primary') && calendar.primary) {
-              CalendarUtils.setCalendarId(calendar.id);
+            if (calendar.hasOwnProperty('primary') && goog.isDefAndNotNull(calendar.primary)) {
+              g2gc.CalendarUtils.setCalendarId(calendar.id);
               console.log('CalendarId initialized to', calendar.id);
               return;
             }
@@ -135,6 +131,6 @@ CalendarUtils.initCalendar = function() {
         });
       });
     }
-    CalendarUtils.calendarId = calendar.calendarId;
+    g2gc.CalendarUtils.calendarId = calendar.calendarId;
   });
 };

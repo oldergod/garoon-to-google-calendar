@@ -1,46 +1,45 @@
-﻿'use strict';
-
-/**
+﻿/**
  * @fileoverview Google Event as object.
  */
+goog.provide('g2gc.GEvent');
 
 /**
  * @constructor
- * @param {Object} gevent
+ * @param {Object} event
  */
-var GEvent = function(gevent) {
+g2gc.GEvent = function(event) {
   /**
    * @type {number}
    * @private
    */
-  this.id_ = gevent.id;
+  this.id_ = event.id;
   /**
    * @type {string}
    * @private
    */
-  this.summary_ = gevent.summary;
+  this.summary_ = event.summary;
   /**
    * @type {string}
    * @private
    */
-  this.location_ = gevent.location;
+  this.location_ = event.location;
   /**
    * @type {string}
    * @private
    */
-  this.start_ = gevent.start;
+  this.start_ = event.start;
   /**
    * @type {string}
    * @private
    */
-  this.end_ = gevent.end;
+  this.end_ = event.end;
 };
 
 /**
  * export GEvent to JSON object
  * @return {!Object}
  */
-GEvent.prototype.toJsonObject = function() {
+g2gc.GEvent.prototype.toJsonObject = function() {
   return {
     'id': this.id_,
     'calendarId': this.calendarId_,

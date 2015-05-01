@@ -2,6 +2,12 @@
   "name": "garoon-to-google-calendar",
   "version": "0.1.0",
   "description": "クラウド型ガルーンのイベントをGoogleCalendarに楽に同期でいるようにするクローム拡張アプリ。",
+  "scripts": {
+    "build": "./bin/build.sh",
+    "compile": "./bin/compile.sh",
+    "build-all": "npm run build && npm run compile"
+  },
+  "author": "oldergod",
   "repository": {
     "type": "git",
     "url": "https://github.com/oldergod/garoon-to-google-calendar.git"
@@ -11,8 +17,7 @@
   },
   "homepage": "https://github.com/oldergod/garoon-to-google-calendar",
   "devDependencies": {
-    "closure-linter-wrapper": "^0.2.11",
-    "grunt-contrib-jshint": "^0.11.2",
-    "grunt-gjslint": "^0.1.6"
+    "google-closure-compiler": "^20150315.0.2",
+    "google-closure-library": "^20150315.0.0"
   }
 }

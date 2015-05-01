@@ -6,16 +6,13 @@
   "version": "0.0.7",
   "background": {
     "scripts": [
-      "javascript/shared.js",
-      "javascript/GEvent.js",
-      "javascript/CalendarUtils.js",
-      "javascript/background.js"
+      "bundleJs/bundleBackground.min.js"
     ]
   },
   "content_scripts": [{
     "matches": ["https://*.cybozu.com/g/*"],
-    "js": ["javascript/shared.js", "javascript/content_script.js"],
-    "css": ["css/content_script.css"]
+    "js": ["bundleJs/bundleContentScript.min.js"],
+    "css": ["css/contentScript.css"]
   }],
   "options_page": "views/options.html",
   "options_ui": {
@@ -35,5 +32,6 @@
       "https://www.googleapis.com/auth/calendar.readonly"
     ]
   },
-  "web_accessible_resources": ["images/success.png", "images/sync.png"]
+  "web_accessible_resources": ["images/success.png", "images/sync.png"],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8ZuLqqD1DusfBqRyQqq//WD5n9qFpOFpJ6GTKLlH8X3WCwXVUOOEodr/5VNGSa7mx2VF/cToR+i5W5IcesaRqkACO5mnIgQcYEidTckmuOoC39Ot5K25Mx3fPkDlaTHQZFHc0z7/Lj6rF9R4ezKrj7c1pmyUU5upvMJvj7pc8ey+EdPsxU739KQJ2gL9YXBRnGmLTwlkh7RpovgT0POV4ad97z0ididppjtwdw629EJ66wc3/jxwQl5uhrqdSMytiX0mE3P7j7bl88N6laFvBvPGg+H3SbhGf3XkEcjdB4VAuoTzj6Vmr1RXlR2wNQKL+m+o4du/JgY/M23RkUqQUwIDAQAB"
 }

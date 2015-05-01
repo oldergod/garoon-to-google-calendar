@@ -1,10 +1,7 @@
-﻿'use strict';
-/* global chrome, gapi, console */
-/* exported init */
-
-/**
+﻿/**
  * @fileoverview Load/save option for extension.
  */
+goog.provide('g2gc.options');
 
 var calendarId;
 
@@ -25,7 +22,7 @@ var loadGapi = function() {
   var head = document.getElementsByTagName('head').item(0);
   var script = document.createElement('script');
   script.type = 'text/javascript';
-  script.src = 'https://apis.google.com/js/client.js?onload=init';
+  script.src = 'https://apis.google.com/js/client.js?onload=initOptions';
   head.appendChild(script);
 };
 
@@ -36,7 +33,7 @@ function restore_options() {
   });
 }
 
-var init = function() {
+var initOptions = function() {
   console.log('gapi loaded');
   chrome.identity.getAuthToken({
     'interactive': true
@@ -54,7 +51,7 @@ var init = function() {
       var select = document.getElementById('calendar_ids');
       request.execute(function(resp) {
         for (var i = 0; i < resp.items.length; i++) {
-          var calendar = resp.items[i];
+          var calendar = /** @type {{accessRole: string, id: string, primary: string, summary: string}} */ (resp.items[i]);
           if (calendar.accessRole === 'owner' || calendar.accessRole === 'writer') {
             var option = document.createElement('option');
             option.value = calendar.id;
@@ -78,5 +75,9 @@ var init = function() {
   });
 };
 
-document.addEventListener('DOMContentLoaded', restore_options);
-document.getElementById('save').addEventListener('click', save_options);
+function main() {
+  document.addEventListener('DOMContentLoaded', restore_options);
+  document.getElementById('save').addEventListener('click', save_options);
+}
+
+main();
