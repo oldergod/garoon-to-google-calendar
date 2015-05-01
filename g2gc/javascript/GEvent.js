@@ -9,6 +9,11 @@ goog.provide('g2gc.GEvent');
  */
 g2gc.GEvent = function(event) {
   /**
+   * @type {string}
+   * @private
+   */
+  this.calendarId_;
+  /**
    * @type {number}
    * @private
    */

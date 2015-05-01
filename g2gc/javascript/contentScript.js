@@ -22,7 +22,7 @@ function switchStyleToSync(gEventId) {
  */
 function parseUrl(aElement) {
   /** @type {{bdate: (string|undefined)}} */
-  var searchObject = {};
+  var searchObject = {'bdate': undefined};
   var queries;
   var split;
   var i;
@@ -33,14 +33,14 @@ function parseUrl(aElement) {
     searchObject[split[0]] = split[1];
   }
   return {
-    protocol: aElement.protocol,
-    host: aElement.host,
-    hostname: aElement.hostname,
-    port: aElement.port,
-    pathname: aElement.pathname,
-    search: aElement.search,
-    searchObject: searchObject,
-    hash: aElement.hash
+    'protocol': aElement.protocol,
+    'host': aElement.host,
+    'hostname': aElement.hostname,
+    'port': aElement.port,
+    'pathname': aElement.pathname,
+    'search': aElement.search,
+    'searchObject': searchObject,
+    'hash': aElement.hash
   };
 }
 
@@ -63,9 +63,9 @@ var TIME_REGEX = /^(\d+):(\d+)-(\d+):(\d+)$/;
  */
 var extractGroupWeekEvent = function(gwe) {
   var _title = gwe.getElementsByClassName('groupWeekEventTitle').item(0);
-  var _query = parseUrl(_title.getElementsByTagName('a')[0]).searchObject;
-  var id = _query.event;
-  var startDate = new Date(_query.bdate);
+  var _query = parseUrl(_title.getElementsByTagName('a')[0])['searchObject'];
+  var id = _query['event'];
+  var startDate = new Date(_query['bdate']);
   var endDate = new Date(startDate);
   var _time = gwe.getElementsByClassName('listTime').item(0);
   var _extractedTitle = TITLE_WITH_LOCATION_REGEX.exec(_title.innerText);
@@ -87,11 +87,11 @@ var extractGroupWeekEvent = function(gwe) {
   endDate.setHours(parseInt(_extractedTime[3], 10), parseInt(_extractedTime[4], 10));
 
   return {
-    id: g2gc.constants.GAROON_ID + id,
-    summary: summary,
-    location: location,
-    start: startDate.garoonToDateTimeObject(),
-    end: endDate.garoonToDateTimeObject()
+    'id': g2gc.constants.GAROON_ID + id,
+    'summary': summary,
+    'location': location,
+    'start': startDate.garoonToDateTimeObject(),
+    'end': endDate.garoonToDateTimeObject()
   };
 };
 
@@ -105,16 +105,16 @@ var onClick = function() {
     var _event = extractGroupWeekEvent(this.parentElement);
 
     chrome.runtime.sendMessage(undefined, {
-      action: g2gc.constants.Action.INSERT_EVENT,
-      gevent: {
-        id: _event.id,
-        summary: _event.summary,
-        location: _event.location,
-        start: _event.start,
-        end: _event.end
+      'action': g2gc.constants.Action.INSERT_EVENT,
+      'gevent': {
+        'id': _event['id'],
+        'summary': _event['summary'],
+        'location': _event['location'],
+        'start': _event['start'],
+        'end': _event['end']
       }
     }, undefined, handleResponse);
-    switchStyleToSync(_event.id);
+    switchStyleToSync(_event['id']);
   };
 };
 
@@ -138,7 +138,7 @@ var initItAll = function() {
     syncButton.className = 'oldering';
     syncButton.appendChild(syncImg);
     syncButton.onclick = onClick();
-    var _eventId = g2gc.constants.GAROON_ID + parseUrl(_title.getElementsByTagName('a')[0]).searchObject.event;
+    var _eventId = g2gc.constants.GAROON_ID + parseUrl(_title.getElementsByTagName('a')[0])['searchObject']['event'];
     syncButton.id = _eventId;
     // TODO benoit maybe should extract the event first and be sure there is no error
     // before adding the button since we don't support all events yet.
@@ -146,9 +146,9 @@ var initItAll = function() {
 
     // test sync
     chrome.runtime.sendMessage(undefined, {
-      action: g2gc.constants.Action.CHECK_SYNC,
-      gevent: {
-        id: _eventId
+      'action': g2gc.constants.Action.CHECK_SYNC,
+      'gevent': {
+        'id': _eventId
       }
     }, undefined, handleResponse);
   }
@@ -166,9 +166,9 @@ function main() {
     });
   });
   var config = /** @type {MutationObserverInit} */ ({
-    attributes: true,
-    childList: true,
-    characterData: true
+    'attributes': true,
+    'childList': true,
+    'characterData': true
   });
   observer.observe(target.parentNode, config);
 
@@ -180,15 +180,15 @@ function main() {
   chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     switch (message.action) {
       case g2gc.constants.Action.CHECK_SYNC:
-        if (message.success && message.hasOwnProperty('geventId') && goog.isDefAndNotNull(message.geventId)) {
-          switchStyleToSync(message.geventId);
+        if (message.success && message.hasOwnProperty('geventId') && goog.isDefAndNotNull(message['geventId'])) {
+          switchStyleToSync(message['geventId']);
         } else {
           console.log('it failed', message);
         }
         break;
       case g2gc.constants.Action.INSERT_EVENT:
-        if (message.success && message.hasOwnProperty('geventId') && goog.isDefAndNotNull(message.geventId)) {
-          switchStyleToSync(message.geventId);
+        if (message.success && message.hasOwnProperty('geventId') && goog.isDefAndNotNull(message['geventId'])) {
+          switchStyleToSync(message['geventId']);
         } else {
           console.log('it failed', message);
         }
@@ -197,10 +197,10 @@ function main() {
         break;
     }
     sendResponse({
-      received: true
+      'received': true
     });
   });
 }
 
-document.addEventListener('DOMContentLoaded', main);
+main();
 

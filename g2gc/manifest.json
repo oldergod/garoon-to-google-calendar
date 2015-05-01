@@ -12,7 +12,8 @@
   "content_scripts": [{
     "matches": ["https://*.cybozu.com/g/*"],
     "js": ["bundleJs/bundleContentScript.min.js"],
-    "css": ["css/contentScript.css"]
+    "css": ["css/contentScript.css"],
+    "run_at": "document_end"
   }],
   "options_page": "views/options.html",
   "options_ui": {

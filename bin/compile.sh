@@ -9,7 +9,7 @@ for namespace in {background,options,contentScript};do
   java -jar node_modules/google-closure-compiler/compiler.jar \
     --js g2gc/bundleJs/bundle${namespace^}.js \
     --js_output_file g2gc/bundleJs/bundle${namespace^}.min.js \
-    --compilation_level="WHITESPACE_ONLY" \
+    --compilation_level="ADVANCED_OPTIMIZATIONS" \
     --formatting="PRETTY_PRINT" \
     --externs="g2gc/externs/chrome_extensions.js" \
     --externs="g2gc/externs/es6-promise.js" \

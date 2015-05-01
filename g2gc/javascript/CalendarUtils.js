@@ -3,6 +3,7 @@
  */
 goog.provide('g2gc.CalendarUtils');
 goog.require('g2gc.GEvent');
+goog.require('g2gc.utils');
 
 /**
  * @param {string} calendarId
@@ -11,27 +12,6 @@ g2gc.CalendarUtils.setCalendarId = function(calendarId) {
   chrome.storage.sync.set({
     'calendarId': calendarId
   });
-};
-
-/**
- * @param {Function} callback
- * @param {Object} args
- */
-g2gc.CalendarUtils.refreshAuthToken = function(callback, args) {
-  var tokenToDisable = gapi.auth.getToken().access_token;
-  chrome.identity.removeCachedAuthToken({
-      'token': tokenToDisable
-    },
-    function() {
-      chrome.identity.getAuthToken({
-        'interactive': true
-      }, function(token) {
-        gapi.auth.setToken({
-          access_token: token
-        });
-        callback.apply(this, args);
-      });
-    });
 };
 
 // TODO(benoit) calendarId is not set when content_script run from chrome start up.
@@ -51,15 +31,15 @@ g2gc.CalendarUtils.insertEvent = function(gevent, senderTabId) {
     var request = gapi.client.calendar.events.insert(gevent.toJsonObject());
     request.execute(function(resp) {
         if (resp.code === 401 || resp.code === 403) {
-          g2gc.CalendarUtils.refreshAuthToken(g2gc.CalendarUtils.insertEvent, [gevent, senderTabId]);
+          g2gc.utils.refreshAuthToken(g2gc.CalendarUtils.insertEvent, [gevent, senderTabId]);
           return;
         }
         console.log(resp);
         // TODO check at least that response if fine
         chrome.tabs.sendMessage(senderTabId, {
-          geventId: gevent.id_,
-          action: g2gc.constants.Action.CHECK_SYNC,
-          success: true
+          'geventId': gevent.id_,
+          'action': g2gc.constants.Action.CHECK_SYNC,
+          'success': true
         });
       },
       function(error) {
@@ -86,7 +66,7 @@ g2gc.CalendarUtils.checkEventSync = function(gevent, senderTabId) {
     var request = gapi.client.calendar.events.get(_obj);
     request.execute(function(resp) {
       if (resp.code === 401 || resp.code === 403) {
-        g2gc.CalendarUtils.refreshAuthToken(g2gc.CalendarUtils.checkEventSync, [gevent, senderTabId]);
+        g2gc.utils.refreshAuthToken(g2gc.CalendarUtils.checkEventSync, [gevent, senderTabId]);
         return;
       }
       if ('iCalUID' in resp) {
@@ -94,9 +74,9 @@ g2gc.CalendarUtils.checkEventSync = function(gevent, senderTabId) {
         // TODO benoit deleted events on GCalendar are still alive, check status or something
         //   also resync cannot work because of this
         chrome.tabs.sendMessage(senderTabId, {
-          geventId: gevent.id_,
-          action: g2gc.constants.Action.CHECK_SYNC,
-          success: true
+          'geventId': gevent.id_,
+          'action': g2gc.constants.Action.CHECK_SYNC,
+          'success': true
         });
       }
     }, function(error) {
@@ -111,16 +91,16 @@ g2gc.CalendarUtils.checkEventSync = function(gevent, senderTabId) {
 g2gc.CalendarUtils.initCalendar = function() {
   chrome.storage.sync.get('calendarId', function(calendar) {
     var calendarP = gapi.client.load('calendar', 'v3');
-    if (!calendar.calendarId) {
+    if (!calendar['calendarId']) {
       calendarP.then(function() {
         var request = gapi.client.calendar.calendarList.list({
-          fields: 'items(id,primary)'
+          'fields': 'items(id,primary)'
         });
 
         request.execute(function(resp) {
           for (var i = 0; i < resp.items.length; i++) {
             var calendar = resp.items[i];
-            if (calendar.hasOwnProperty('primary') && goog.isDefAndNotNull(calendar.primary)) {
+            if (calendar.hasOwnProperty('primary') && goog.isDefAndNotNull(calendar['primary'])) {
               g2gc.CalendarUtils.setCalendarId(calendar.id);
               console.log('CalendarId initialized to', calendar.id);
               return;
@@ -131,6 +111,6 @@ g2gc.CalendarUtils.initCalendar = function() {
         });
       });
     }
-    g2gc.CalendarUtils.calendarId = calendar.calendarId;
+    g2gc.CalendarUtils.calendarId = calendar['calendarId'];
   });
 };

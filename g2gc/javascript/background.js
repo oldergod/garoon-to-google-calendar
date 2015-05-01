@@ -5,31 +5,30 @@ goog.provide('g2gc.background');
 goog.require('g2gc.CalendarUtils');
 goog.require('g2gc.constants');
 
-var initBackground = function() {
-  console.log('gapi loaded');
+var g2gc_background_initBackground = function() {
+  console.log('gapi loaded in background');
   chrome.identity.getAuthToken({
     'interactive': true
   }, function(token) {
     gapi.auth.setToken({
-      access_token: token
+      'access_token': token
     });
     g2gc.CalendarUtils.initCalendar();
   });
 };
+goog.exportSymbol('g2gc_background_initBackground', g2gc_background_initBackground);
 
-function main() {
+g2gc.background.main = function() {
   var head = document.getElementsByTagName('head').item(0);
   var script = document.createElement('script');
-  /** gjslint wants some doc here? */
   script.type = 'text/javascript';
-  /** gjslint wants some doc here? */
-  script.src = 'https://apis.google.com/js/client.js?onload=initBackground';
+  script.src = 'https://apis.google.com/js/client.js?onload=g2gc_background_initBackground';
   head.appendChild(script);
 
-  addListeners();
+  g2gc.background.addListeners();
 }
 
-function addListeners() {
+g2gc.background.addListeners = function() {
   // listen to calendarId changes;
   chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (var key in changes) {
@@ -52,13 +51,13 @@ function addListeners() {
   chrome.runtime.onMessage.addListener(function(message, sender) {
     switch (message.action) {
       case g2gc.constants.Action.INSERT_EVENT:
-        if(message.hasOwnProperty('gevent') && goog.isDefAndNotNull(message.gevent)) {
-          g2gc.CalendarUtils.insertEvent(new g2gc.GEvent(message.gevent), sender.tab.id);
+        if(message.hasOwnProperty('gevent') && goog.isDefAndNotNull(message['gevent'])) {
+          g2gc.CalendarUtils.insertEvent(new g2gc.GEvent(message['gevent']), sender.tab.id);
         }
         break;
       case g2gc.constants.Action.CHECK_SYNC:
-        if(message.hasOwnProperty('gevent') && goog.isDefAndNotNull(message.gevent)) {
-          g2gc.CalendarUtils.checkEventSync(new g2gc.GEvent(message.gevent), sender.tab.id);
+        if(message.hasOwnProperty('gevent') && goog.isDefAndNotNull(message['gevent'])) {
+          g2gc.CalendarUtils.checkEventSync(new g2gc.GEvent(message['gevent']), sender.tab.id);
         }
         break;
       default:
@@ -78,4 +77,4 @@ function addListeners() {
 
 }
 
-main();
+g2gc.background.main();
