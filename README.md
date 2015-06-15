@@ -1,6 +1,9 @@
 ﻿# garoon-to-google-calendar
 クラウド型ガルーンのイベントをGoogleCalendarに楽に同期でいるようにするクローム拡張アプリ。
 
+## インストール
+* [ChromeのWebStoreから](https://chrome.google.com/webstore/detail/garoon-2-googlecalendar/fpnofeookcjnldaoemphbikcgbgbklhe)。
+
 ## 機能説明
 * クラウド型ガルーンのGroupWeekViewのみ対応。
 * バナーイベントは対象外。
