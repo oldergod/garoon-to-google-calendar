@@ -27,7 +27,7 @@
   ],
   "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'",
   "oauth2": {
-    "client_id": "399491186877-q1jlih0db5fjaonr99lgj3ttq3h1h5dh.apps.googleusercontent.com",
+    "client_id": "100199330116-h2jjskhd76aj7o2799so8q998fon1ieb.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/calendar",
       "https://www.googleapis.com/auth/calendar.readonly"
