@@ -4,11 +4,11 @@ BASEDIR=$(cd $(dirname $0)/..; pwd)
 cd $BASEDIR
 
 for namespace in {background,options,contentScript};do
-  echo Compiling g2gc/bundleJs/bundle${namespace^}.js
-  rm -f g2gc/bundleJs/bundle${namespace^}.min.js
+  echo Compiling g2gc/bundleJs/bundle${namespace}.js
+  rm -f g2gc/bundleJs/bundle${namespace}.min.js
   java -jar node_modules/google-closure-compiler/compiler.jar \
-    --js g2gc/bundleJs/bundle${namespace^}.js \
-    --js_output_file g2gc/bundleJs/bundle${namespace^}.min.js \
+    --js g2gc/bundleJs/bundle${namespace}.js \
+    --js_output_file g2gc/bundleJs/bundle${namespace}.min.js \
     --compilation_level="ADVANCED_OPTIMIZATIONS" \
     --formatting="PRETTY_PRINT" \
     --externs="g2gc/externs/chrome_extensions.js" \
